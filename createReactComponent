@@ -1,0 +1,50 @@
+#!/usr/bin/env node
+
+const fs = require('fs');
+const path = require('path');
+
+// заполнение tsx файла шаблоном компонента
+function generateTSXTemplate(componentName) {
+  return `import classes from './${componentName}.module.scss';
+
+interface ${componentName}Props {
+
+}
+
+export const ${componentName} = ({}: ${componentName}Props) => {
+  return (
+    <div className={classes.${componentName.toLowerCase()}}>
+      {/* Твой код здесь */}
+    </div>
+  );
+};
+`;
+}
+
+// Функция для создания файлов
+function createFiles(currentDirectory) {
+  const folderName = path.basename(currentDirectory);
+  const capitalizedFolderName =
+    folderName.charAt(0).toUpperCase() + folderName.slice(1);
+
+  const indexPath = path.join(currentDirectory, 'index.ts');
+  const scssPath = path.join(
+    currentDirectory,
+    `${capitalizedFolderName}.module.scss`
+  );
+  const tsxPath = path.join(
+    currentDirectory,
+    `${capitalizedFolderName}.tsx`
+  );
+
+  fs.writeFileSync(indexPath, `export { ${capitalizedFolderName} } from './${capitalizedFolderName}';`);
+  fs.writeFileSync(scssPath, `.${folderName} {\n}`);
+  fs.writeFileSync(tsxPath, generateTSXTemplate(capitalizedFolderName));
+
+  console.log('Файлы созданы успешно!');
+}
+
+// Получение текущей директории
+const currentDirectory = process.cwd();
+
+createFiles(currentDirectory);
